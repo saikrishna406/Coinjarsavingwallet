@@ -1,100 +1,255 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { BarChart3, Home, LogOut, PiggyBank, Settings, Wallet } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+    faThLarge,
+    faWallet,
+    faChartBar,
+    faBullseye,
+    faQuestionCircle,
+    faCog,
+    faCreditCard,
+    faChevronDown
+} from '@fortawesome/free-solid-svg-icons'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
-    items: {
-        href: string
-        title: string
-        icon: React.ComponentType<{ className?: string }>
-    }[]
-}
+type MenuItem = { name: string; href: string; icon?: React.ReactNode };
 
-export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
-    const pathname = usePathname()
+const Menu = ({ children, items }: { children: React.ReactNode; items: MenuItem[] }) => {
+    const [isOpened, setIsOpened] = useState(false);
 
     return (
-        <nav
-            className={cn(
-                "flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1",
-                className
+        <div>
+            <button
+                className="w-full flex items-center justify-between text-gray-600 p-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 duration-150"
+                onClick={() => setIsOpened((v) => !v)}
+                aria-expanded={isOpened}
+                aria-controls="submenu"
+            >
+                <div className="flex items-center gap-x-2">{children}</div>
+                <FontAwesomeIcon icon={faChevronDown} className={`w-3 h-3 duration-150 ${isOpened ? "rotate-180" : ""}`} />
+            </button>
+
+            {isOpened && (
+                <ul id="submenu" className="mx-4 px-2 border-l text-sm font-medium">
+                    {items.map((item, idx) => (
+                        <li key={idx}>
+                            <Link
+                                href={item.href}
+                                className="flex items-center gap-x-2 text-gray-600 p-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 duration-150"
+                            >
+                                {item.icon ? <div className="text-gray-500">{item.icon}</div> : null}
+                                {item.name}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
             )}
-            {...props}
-        >
-            {items.map((item) => (
-                <Button
-                    key={item.href}
-                    variant={pathname === item.href ? "secondary" : "ghost"}
-                    className={cn(
-                        "justify-start",
-                        pathname === item.href && "bg-muted hover:bg-muted"
-                    )}
-                    asChild
-                >
-                    <Link href={item.href}>
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {item.title}
-                    </Link>
-                </Button>
-            ))}
-        </nav>
-    )
-}
+        </div>
+    );
+};
 
-export function Sidebar({ className }: React.HTMLAttributes<HTMLDivElement>) {
-    const sidebarItems = [
-        { href: "/dashboard", title: "Overview", icon: Home },
-        { href: "/dashboard/goals", title: "My Goals", icon: TargetIcon },
-        { href: "/dashboard/wallet", title: "Wallet", icon: Wallet },
-        { href: "/dashboard/activity", title: "Activity", icon: BarChart3 },
-        { href: "/dashboard/settings", title: "Settings", icon: Settings },
-    ]
+export function Sidebar({ className }: { className?: string }) {
+    const pathname = usePathname();
+
+    const navigation: MenuItem[] = [
+        {
+            href: "/dashboard",
+            name: "Overview",
+            icon: <FontAwesomeIcon icon={faThLarge} className="w-5 h-5" />,
+        },
+        {
+            href: "/dashboard/goals",
+            name: "My Goals",
+            icon: <FontAwesomeIcon icon={faBullseye} className="w-5 h-5" />,
+        },
+        {
+            href: "/dashboard/wallet",
+            name: "Wallet",
+            icon: <FontAwesomeIcon icon={faWallet} className="w-5 h-5" />,
+        },
+        {
+            href: "/dashboard/activity",
+            name: "Activity",
+            icon: <FontAwesomeIcon icon={faChartBar} className="w-5 h-5" />,
+        },
+    ];
+
+    const navsFooter: MenuItem[] = [
+        {
+            href: "/dashboard/help",
+            name: "Help",
+            icon: <FontAwesomeIcon icon={faQuestionCircle} className="w-5 h-5" />,
+        },
+        {
+            href: "/dashboard/settings",
+            name: "Settings",
+            icon: <FontAwesomeIcon icon={faCog} className="w-5 h-5" />,
+        },
+    ];
+
+    const nestedNav: MenuItem[] = [
+        { name: "Cards", href: "/dashboard/billing/cards" },
+        { name: "Checkouts", href: "/dashboard/billing/checkouts" },
+        { name: "Payments", href: "/dashboard/billing/payments" },
+        { name: "Get paid", href: "/dashboard/billing/getpaid" },
+    ];
+
+    const profileRef = useRef<HTMLButtonElement | null>(null);
+    const [isProfileActive, setIsProfileActive] = useState(false);
+
+    useEffect(() => {
+        const handleProfile = (e: MouseEvent) => {
+            if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+                setIsProfileActive(false);
+            }
+        };
+        document.addEventListener("click", handleProfile);
+        return () => document.removeEventListener("click", handleProfile);
+    }, []);
 
     return (
-        <div className={cn("pb-12 h-screen border-r bg-background", className)}>
-            <div className="space-y-4 py-4">
-                <div className="px-3 py-2">
-                    <div className="flex items-center gap-2 px-4 mb-8">
-                        <PiggyBank className="h-6 w-6 text-primary" />
-                        <span className="text-xl font-bold tracking-tight text-primary">CoinJar</span>
+        <nav className={`fixed top-0 left-0 w-[260px] h-full border-r border-gray-200 bg-white ${className || ''}`}>
+            <div className="flex flex-col h-full px-3">
+                <div className="h-20 flex items-center pl-2">
+                    <div className="w-full flex items-center gap-x-4">
+                        <Avatar className="w-10 h-10">
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback>SK</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <span className="block text-gray-700 text-sm font-semibold">Saikrishna</span>
+                            <span className="block mt-px text-gray-600 text-xs">Pro Plan</span>
+                        </div>
+
+                        <div className="relative flex-1 text-right">
+                            <button
+                                ref={profileRef}
+                                className="p-1.5 rounded-md text-gray-500 hover:bg-gray-50 active:bg-gray-100"
+                                onClick={() => setIsProfileActive((v) => !v)}
+                                aria-haspopup="menu"
+                                aria-expanded={isProfileActive}
+                                aria-controls="profile-menu"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                    className="w-5 h-5"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                            </button>
+
+                            {isProfileActive && (
+                                <div
+                                    id="profile-menu"
+                                    role="menu"
+                                    className="absolute z-10 top-12 right-0 w-64 rounded-lg bg-white shadow-md border text-sm text-gray-600"
+                                >
+                                    <div className="p-2 text-left">
+                                        <span className="block text-gray-500/80 p-2">saikrishna@example.com</span>
+                                        <Link
+                                            href="/dashboard/account"
+                                            className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"
+                                            role="menuitem"
+                                        >
+                                            Add another account
+                                        </Link>
+
+                                        <div className="relative rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                                className="w-4 h-4 absolute right-1 inset-y-0 my-auto pointer-events-none"
+                                                aria-hidden="true"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                            <select className="w-full cursor-pointer appearance-none bg-transparent p-2 outline-none" defaultValue="">
+                                                <option value="" disabled hidden>
+                                                    Theme
+                                                </option>
+                                                <option>Dark</option>
+                                                <option>Light</option>
+                                            </select>
+                                        </div>
+
+                                        <button
+                                            className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"
+                                            onClick={() => window.location.href = '/auth/login'}
+                                        >
+                                            Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <div className="space-y-1">
-                        <SidebarNav items={sidebarItems} />
+                </div>
+
+                <div className="overflow-auto">
+                    <ul className="text-sm font-medium flex-1">
+                        {navigation.map((item, idx) => (
+                            <li key={idx}>
+                                <Link
+                                    href={item.href}
+                                    className={`flex items-center gap-x-2 p-2 rounded-lg duration-150 ${pathname === item.href
+                                        ? "bg-gray-100 text-gray-900"
+                                        : "text-gray-600 hover:bg-gray-50 active:bg-gray-100"
+                                        }`}
+                                >
+                                    <div className="text-gray-500">{item.icon}</div>
+                                    {item.name}
+                                </Link>
+                            </li>
+                        ))}
+
+                        <li>
+                            <Menu items={nestedNav}>
+                                <FontAwesomeIcon icon={faCreditCard} className="w-5 h-5 text-gray-500" />
+                                Billing
+                            </Menu>
+                        </li>
+                    </ul>
+
+                    <div className="pt-2 mt-2 border-t">
+                        <ul className="text-sm font-medium">
+                            {navsFooter.map((item, idx) => (
+                                <li key={idx}>
+                                    <Link
+                                        href={item.href}
+                                        className="flex items-center gap-x-2 text-gray-600 p-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 duration-150"
+                                    >
+                                        <div className="text-gray-500">{item.icon}</div>
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
             </div>
-            <div className="absolute bottom-4 left-0 w-full px-6">
-                <Button variant="ghost" className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Logout
-                </Button>
-            </div>
-        </div>
-    )
-}
-
-// Temporary Icon fix
-function TargetIcon(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="10" />
-            <circle cx="12" cy="12" r="6" />
-            <circle cx="12" cy="12" r="2" />
-        </svg>
-    )
+        </nav>
+    );
 }

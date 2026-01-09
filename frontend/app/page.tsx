@@ -11,10 +11,11 @@ import { MinimalFooter } from "@/components/ui/minimal-footer"
 import { Github, Linkedin, Mail, Twitter, Coins } from "lucide-react"
 
 import BlurText from "@/components/ui/blur-text"
+import "./landing.css"
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="landing-page flex min-h-screen flex-col">
       <FloatingNav
         navItems={[
           {
@@ -95,7 +96,7 @@ export default function Home() {
                       </p>
                       <div className="grid grid-cols-1 gap-4">
                         <img
-                          src="https://f46fa3330-0d09-45d1-8e35-244dfb6a84a7.files.usr.usercontent.goog/upi_link_illustration_1767872618933.png"
+                          src="/upi_link_illustration.png"
                           alt="Link UPI"
                           width={500}
                           height={500}
@@ -115,7 +116,7 @@ export default function Home() {
                       </p>
                       <div className="grid grid-cols-1 gap-4">
                         <img
-                          src="https://f46fa3330-0d09-45d1-8e35-244dfb6a84a7.files.usr.usercontent.goog/savings_goal_illustration_1767872636062.png"
+                          src="/savings_goal_illustration.png"
                           alt="Set Goals"
                           width={500}
                           height={500}
@@ -135,7 +136,7 @@ export default function Home() {
                       </p>
                       <div className="grid grid-cols-1 gap-4">
                         <img
-                          src="https://f46fa3330-0d09-45d1-8e35-244dfb6a84a7.files.usr.usercontent.goog/auto_save_illustration_1767872665455.png"
+                          src="/auto_save_illustration.png"
                           alt="Auto Save"
                           width={500}
                           height={500}

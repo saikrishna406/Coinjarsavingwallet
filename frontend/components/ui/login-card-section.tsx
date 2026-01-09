@@ -24,9 +24,21 @@ import {
     ArrowRight,
     Chrome,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginCardSection() {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const router = useRouter();
+
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Add your login logic here
+        console.log("Logging in with:", email, password);
+        router.push("/auth/verify"); // Example redirection
+    };
 
     // Canvas Logic for Particles
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -87,6 +99,26 @@ export default function LoginCardSection() {
 
     return (
         <section className="relative min-h-screen w-full flex items-center justify-center bg-zinc-950 text-zinc-50 overflow-hidden">
+            {/* Back button */}
+            <Link
+                href="/"
+                className="absolute top-6 left-6 z-50 flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors duration-200"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+            </Link>
             <style>{`
         /* Animated accent lines */
         .accent-lines{position:absolute;inset:0;pointer-events:none;opacity:.7}
@@ -157,66 +189,74 @@ export default function LoginCardSection() {
                     </CardHeader>
 
                     <CardContent className="grid gap-5">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email" className="text-zinc-300">
-                                Email
-                            </Label>
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="you@example.com"
-                                    className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="password" className="text-zinc-300">
-                                Password
-                            </Label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                                <Input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="••••••••"
-                                    className="pl-10 pr-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                />
-                                <button
-                                    type="button"
-                                    aria-label={showPassword ? "Hide password" : "Show password"}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-zinc-400 hover:text-zinc-200"
-                                    onClick={() => setShowPassword((v) => !v)}
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                        <Eye className="h-4 w-4" />
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Checkbox
-                                    id="remember"
-                                    className="border-zinc-700 data-[state=checked]:bg-zinc-50 data-[state=checked]:text-zinc-900"
-                                />
-                                <Label htmlFor="remember" className="text-zinc-400 cursor-pointer">
-                                    Remember me
+                        <form onSubmit={handleLogin} className="grid gap-5">
+                            <div className="grid gap-2">
+                                <Label htmlFor="email" className="text-zinc-300">
+                                    Email
                                 </Label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="you@example.com"
+                                        className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <a href="#" className="text-sm text-zinc-300 hover:text-zinc-100">
-                                Forgot password?
-                            </a>
-                        </div>
 
-                        <Button className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors">
-                            Continue
-                        </Button>
+                            <div className="grid gap-2">
+                                <Label htmlFor="password" className="text-zinc-300">
+                                    Password
+                                </Label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        className="pl-10 pr-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        aria-label={showPassword ? "Hide password" : "Show password"}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-zinc-400 hover:text-zinc-200"
+                                        onClick={() => setShowPassword((v) => !v)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Checkbox
+                                        id="remember"
+                                        className="border-zinc-700 data-[state=checked]:bg-zinc-50 data-[state=checked]:text-zinc-900"
+                                    />
+                                    <Label htmlFor="remember" className="text-zinc-400 cursor-pointer">
+                                        Remember me
+                                    </Label>
+                                </div>
+                                <Link href="#" className="text-sm text-zinc-300 hover:text-zinc-100">
+                                    Forgot password?
+                                </Link>
+                            </div>
+
+                            <Button className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors" type="submit">
+                                Continue
+                            </Button>
+                        </form>
 
                         <div className="relative">
                             <Separator className="bg-zinc-800" />
@@ -225,17 +265,10 @@ export default function LoginCardSection() {
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="flex justify-center w-full">
                             <Button
                                 variant="outline"
-                                className="h-10 rounded-lg border-zinc-800 bg-zinc-950 text-zinc-50 hover:bg-zinc-900/80 transition-colors"
-                            >
-                                <Github className="h-4 w-4 mr-2" />
-                                GitHub
-                            </Button>
-                            <Button
-                                variant="outline"
-                                className="h-10 rounded-lg border-zinc-800 bg-zinc-950 text-zinc-50 hover:bg-zinc-900/80 transition-colors"
+                                className="w-full h-10 rounded-lg border-zinc-800 bg-zinc-950 text-zinc-50 hover:bg-zinc-900/80 transition-colors"
                             >
                                 <Chrome className="h-4 w-4 mr-2" />
                                 Google
@@ -245,9 +278,9 @@ export default function LoginCardSection() {
 
                     <CardFooter className="flex items-center justify-center text-sm text-zinc-400">
                         Don’t have an account?
-                        <a className="ml-1 text-zinc-200 hover:underline" href="/auth/register">
+                        <Link className="ml-1 text-zinc-200 hover:underline" href="/auth/register">
                             Create one
-                        </a>
+                        </Link>
                     </CardFooter>
                 </Card>
             </div>

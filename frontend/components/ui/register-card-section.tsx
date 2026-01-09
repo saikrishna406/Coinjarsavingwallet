@@ -16,9 +16,23 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Github, Chrome, User, Mail, Lock, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function RegisterCardSection() {
     const [showPassword, setShowPassword] = useState(false);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [phone, setPhone] = useState(""); // Assuming phone is needed based on previous edits
+    const router = useRouter();
+
+    const handleSignup = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Add your signup logic here
+        console.log("Signing up with:", { name, email, password, phone });
+        router.push("/auth/verify"); // Example redirection
+    };
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     useEffect(() => {
@@ -78,6 +92,26 @@ export default function RegisterCardSection() {
 
     return (
         <section className="relative min-h-screen w-full flex items-center justify-center bg-zinc-950 text-zinc-50 overflow-hidden">
+            {/* Back button */}
+            <Link
+                href="/"
+                className="absolute top-6 left-6 z-50 flex items-center gap-2 text-zinc-400 hover:text-zinc-100 transition-colors duration-200"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+            </Link>
             <style>{`
         /* Card animation */
         .card-animate {
@@ -134,86 +168,99 @@ export default function RegisterCardSection() {
                     </CardHeader>
 
                     <CardContent className="grid gap-5">
-                        <div className="grid gap-2">
-                            <Label htmlFor="name" className="text-zinc-300">
-                                Full Name
-                            </Label>
-                            <div className="relative">
-                                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    placeholder="John Doe"
-                                    className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                />
+                        <form onSubmit={handleSignup} className="grid gap-5">
+                            <div className="grid gap-2">
+                                <Label htmlFor="name" className="text-zinc-300">
+                                    Full Name
+                                </Label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                    <Input
+                                        id="name"
+                                        type="text"
+                                        placeholder="John Doe"
+                                        className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="email" className="text-zinc-300">
-                                Email
-                            </Label>
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="you@example.com"
-                                    className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                />
+                            <div className="grid gap-2">
+                                <Label htmlFor="email" className="text-zinc-300">
+                                    Email
+                                </Label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="you@example.com"
+                                        className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password" className="text-zinc-300">
-                                Password
-                            </Label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                                <Input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    placeholder="••••••••"
-                                    className="pl-10 pr-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                />
-                                <button
-                                    type="button"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-zinc-400 hover:text-zinc-200"
-                                    onClick={() => setShowPassword((v) => !v)}
-                                >
-                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </button>
+                            <div className="grid gap-2">
+                                <Label htmlFor="password" className="text-zinc-300">
+                                    Password
+                                </Label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="••••••••"
+                                        className="pl-10 pr-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-zinc-400 hover:text-zinc-200"
+                                        onClick={() => setShowPassword((v) => !v)}
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="Phone_Number" className="text-zinc-300">
-                                Phone Number
-                            </Label>
-                            <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                                <Input
-                                    id="Phone_Number"
-                                    type="tel"
-                                    placeholder="+91"
-                                    className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                />
+                            <div className="grid gap-2">
+                                <Label htmlFor="Phone_Number" className="text-zinc-300">
+                                    Phone Number
+                                </Label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                    <Input
+                                        id="Phone_Number"
+                                        type="tel"
+                                        placeholder="+91"
+                                        className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex items-center gap-2">
-                            <Checkbox
-                                id="terms"
-                                className="border-zinc-700 data-[state=checked]:bg-zinc-50 data-[state=checked]:text-zinc-900"
-                            />
-                            <Label htmlFor="terms" className="text-zinc-400 text-sm cursor-pointer">
-                                I agree to the Terms & Privacy
-                            </Label>
-                        </div>
+                            <div className="flex items-center gap-2">
+                                <Checkbox
+                                    id="terms"
+                                    className="border-zinc-700 data-[state=checked]:bg-zinc-50 data-[state=checked]:text-zinc-900"
+                                />
+                                <Label htmlFor="terms" className="text-zinc-400 text-sm cursor-pointer">
+                                    I agree to the Terms & Privacy
+                                </Label>
+                            </div>
 
-                        <Button className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors">
-                            Sign Up
-                        </Button>
+                            <Button className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors" type="submit">
+                                Sign Up
+                            </Button>
+                        </form>
 
                         <div className="relative">
                             <Separator className="bg-zinc-800" />
@@ -235,9 +282,9 @@ export default function RegisterCardSection() {
 
                     <CardFooter className="flex items-center justify-center text-sm text-zinc-400">
                         Already have an account?
-                        <a className="ml-1 text-zinc-200 hover:underline" href="/auth/login">
+                        <Link className="ml-1 text-zinc-200 hover:underline" href="/auth/login">
                             Log in
-                        </a>
+                        </Link>
                     </CardFooter>
                 </Card>
             </div>

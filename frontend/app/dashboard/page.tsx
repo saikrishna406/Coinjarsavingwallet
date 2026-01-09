@@ -1,123 +1,228 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowUpRight, Plus } from "lucide-react"
+"use client"
+
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { motion } from "framer-motion"
+import {
+    faPlane,
+    faLaptop,
+    faShield,
+    faChartLine,
+    faPlus,
+    faArrowRight,
+    faBookmark,
+    faClock,
+    faMapMarkerAlt,
+    faWallet,
+    faFire,
+    faBullseye,
+    faCalendar
+} from '@fortawesome/free-solid-svg-icons'
 import { CreateGoalDialog } from "@/components/dashboard/create-goal-dialog"
 import { PaymentModal } from "@/components/dashboard/payment-modal"
 
+const container = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+}
+
+const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+}
+
 export default function DashboardPage() {
+    const currentHour = new Date().getHours()
+    const greeting = currentHour < 12 ? "Good Morning" : currentHour < 18 ? "Good Afternoon" : "Good Evening"
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">Overview</h2>
-                <div className="flex items-center space-x-2">
-                    <CreateGoalDialog />
+        <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-8 max-w-[1200px]"
+        >
+            {/* Hero Section */}
+            <motion.div variants={item} className="space-y-2">
+                <h1 className="text-4xl font-bold text-gray-900">CoinJar</h1>
+                <p className="text-gray-600 max-w-md">
+                    Start your savings journey. Your next financial goal is here! Don't hold the ball - get it rolling.
+                </p>
+            </motion.div>
+
+            {/* Quick Stats Cards */}
+            <motion.div variants={item} className="grid md:grid-cols-2 gap-4">
+                <Card className="border border-gray-100 bg-white">
+                    <CardContent className="p-6">
+                        <h3 className="font-semibold text-gray-900 mb-2">Track Your Savings</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                            We monitor your savings progress automatically. They are actually growing for you!
+                        </p>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                            See Progress
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                <Card className="border border-gray-100 bg-white">
+                    <CardContent className="p-6">
+                        <h3 className="font-semibold text-gray-900 mb-2">Get Helpful Tips</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                            We have curated resources to help you get better at saving and managing money.
+                        </p>
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                            See Resources
+                        </Button>
+                    </CardContent>
+                </Card>
+            </motion.div>
+
+            {/* Quick Stats Row */}
+            <motion.div variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-gray-100">
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <FontAwesomeIcon icon={faWallet} className="text-gray-400 text-sm" />
+                        <p className="text-sm text-gray-600">Total Savings</p>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">₹12,450</p>
+                    <div className="flex items-center gap-1 mt-1">
+                        <FontAwesomeIcon icon={faChartLine} className="text-green-600 text-xs" />
+                        <span className="text-xs text-green-600">+20.1%</span>
+                    </div>
                 </div>
-            </div>
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <FontAwesomeIcon icon={faBullseye} className="text-gray-400 text-sm" />
+                        <p className="text-sm text-gray-600">Active Goals</p>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">3</p>
+                    <p className="text-xs text-gray-500 mt-1">2 on track</p>
+                </div>
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <FontAwesomeIcon icon={faWallet} className="text-gray-400 text-sm" />
+                        <p className="text-sm text-gray-600">Wallet Balance</p>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">₹450</p>
+                    <Button variant="link" className="h-auto p-0 text-xs mt-1">
+                        Withdraw
+                    </Button>
+                </div>
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <FontAwesomeIcon icon={faFire} className="text-gray-400 text-sm" />
+                        <p className="text-sm text-gray-600">Saving Streak</p>
+                    </div>
+                    <p className="text-2xl font-bold text-gray-900">12 Days</p>
+                    <p className="text-xs text-gray-500 mt-1">Keep it up!</p>
+                </div>
+            </motion.div>
 
-            {/* Stats Row */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Savings</CardTitle>
-                        <div className="h-4 w-4 text-muted-foreground">₹</div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">₹12,450</div>
-                        <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Goals</CardTitle>
-                        <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">3</div>
-                        <p className="text-xs text-muted-foreground">2 on track</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Wallet Balance</CardTitle>
-                        <div className="h-4 w-4 text-muted-foreground">₹</div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">₹450</div>
-                        <p className="text-xs text-muted-foreground">Available to withdraw</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Streak</CardTitle>
-                        <div className="h-4 w-4 text-muted-foreground">🔥</div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">12 Days</div>
-                        <p className="text-xs text-muted-foreground">Keep it up!</p>
-                    </CardContent>
-                </Card>
-            </div>
+            {/* Active Goals Section */}
+            <motion.div variants={item}>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-bold text-gray-900">Active Goals</h2>
+                    <Button variant="link" className="text-sm text-gray-600 hover:text-gray-900">
+                        See all goals
+                    </Button>
+                </div>
 
-            {/* Recent Activity / Goals */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4">
-                    <CardHeader>
-                        <CardTitle>Active Goals</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {/* Goal Item Mock */}
-                            {[
-                                { title: "Trip to Goa", target: 20000, current: 8500, percent: 42, color: "bg-blue-500" },
-                                { title: "New Laptop", target: 80000, current: 12000, percent: 15, color: "bg-purple-500" },
-                                { title: "Emergency Fund", target: 50000, current: 45000, percent: 90, color: "bg-green-500" },
-                            ].map((goal, i) => (
-                                <div key={i} className="flex items-center justify-between">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-none">{goal.title}</p>
-                                        <p className="text-xs text-muted-foreground">
-                                            ₹{goal.current} / ₹{goal.target}
-                                        </p>
-                                    </div>
-                                    <div className="w-[30%] flex items-center gap-2">
-                                        <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                                            <div className={`h-full ${goal.color}`} style={{ width: `${goal.percent}%` }} />
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[
+                        {
+                            title: "Trip to Goa",
+                            company: "Vacation Fund",
+                            amount: "₹8,500 / ₹20,000",
+                            location: "45 days left",
+                            type: "Remote, Remote, India",
+                            hours: "42% complete",
+                            posted: "Started Apr 8, 2025",
+                            percent: 42,
+                            icon: faPlane,
+                            color: "blue"
+                        },
+                        {
+                            title: "New Laptop",
+                            company: "Tech Upgrade",
+                            amount: "₹12,000 / ₹80,000",
+                            location: "120 days left",
+                            type: "Hybrid, Onsite, Bangalore",
+                            hours: "15% complete",
+                            posted: "Started Apr 8, 2025",
+                            percent: 15,
+                            icon: faLaptop,
+                            color: "purple"
+                        },
+                        {
+                            title: "Emergency Fund",
+                            company: "Safety Net",
+                            amount: "₹45,000 / ₹50,000",
+                            location: "10 days left",
+                            type: "Hybrid, Onsite, Mumbai",
+                            hours: "90% complete",
+                            posted: "Started Apr 7, 2025",
+                            percent: 90,
+                            icon: faShield,
+                            color: "green"
+                        },
+                    ].map((goal, i) => (
+                        <Card key={i} className="border border-gray-100 bg-white hover:shadow-md transition-shadow group">
+                            <CardContent className="p-5">
+                                {/* Header */}
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded bg-gray-100 flex items-center justify-center">
+                                            <FontAwesomeIcon icon={goal.icon} className="text-gray-600 text-lg" />
                                         </div>
-                                        <span className="text-xs font-bold w-8">{goal.percent}%</span>
+                                        <div>
+                                            <h3 className="font-semibold text-gray-900">{goal.title}</h3>
+                                            <p className="text-sm text-gray-600">{goal.company}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <PaymentModal />
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <FontAwesomeIcon icon={faBookmark} className="text-gray-400 text-sm" />
+                                    </Button>
+                                </div>
+
+                                {/* Amount */}
+                                <div className="mb-3">
+                                    <p className="text-lg font-semibold text-gray-900">{goal.amount}</p>
+                                </div>
+
+                                {/* Details */}
+                                <div className="space-y-2 mb-4">
+                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-400 text-xs" />
+                                        <span>{goal.location}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <FontAwesomeIcon icon={faClock} className="text-gray-400 text-xs" />
+                                        <span>{goal.hours}</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="col-span-3">
-                    <CardHeader>
-                        <CardTitle>Recent Transactions</CardTitle>
-                        <CardContent className="px-0 pt-4">
-                            <div className="space-y-4">
-                                {[
-                                    { desc: "Auto-save for Goa", amount: "+ ₹100", date: "Today, 10:00 AM" },
-                                    { desc: "Round-up save", amount: "+ ₹12", date: "Today, 08:30 AM" },
-                                    { desc: "Weekly Auto-save", amount: "+ ₹500", date: "Yesterday" },
-                                    { desc: "Withdrawal", amount: "- ₹1000", date: "Oct 22" },
-                                ].map((t, x) => (
-                                    <div key={x} className="flex items-center justify-between border-b pb-2 last:border-0">
-                                        <div>
-                                            <p className="text-sm font-medium">{t.desc}</p>
-                                            <p className="text-xs text-muted-foreground">{t.date}</p>
-                                        </div>
-                                        <div className={`text-sm font-bold ${t.amount.startsWith("+") ? "text-green-600" : "text-red-500"}`}>
-                                            {t.amount}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </CardHeader>
-                </Card>
-            </div>
-        </div>
+
+                                {/* Progress Bar */}
+                                <div className="mb-4">
+                                    <Progress value={goal.percent} className="h-1" />
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-gray-500">{goal.posted}</span>
+                                    <PaymentModal />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </motion.div>
+        </motion.div>
     )
 }

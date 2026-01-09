@@ -1,0 +1,71 @@
+/* Landing Page Specific Styles */
+
+.landing-page {
+    --landing-background: #050505;
+    --landing-foreground: #ffffff;
+    --landing-primary: #5227ff;
+    --landing-primary-foreground: #ffffff;
+    --landing-secondary: #10b981;
+    --landing-secondary-foreground: #ffffff;
+    --landing-muted: #f1f5f9;
+    --landing-muted-foreground: #64748b;
+    --landing-card: #0a0a0a;
+    --landing-card-foreground: #ffffff;
+    --landing-border: #e2e8f0;
+    --landing-input: #e2e8f0;
+    --landing-ring: #5227ff;
+}
+
+/* Apply landing page theme */
+.landing-page {
+    color: var(--landing-foreground);
+}
+
+.landing-page .bg-background {
+    background-color: var(--landing-background);
+}
+
+.landing-page .text-foreground {
+    color: var(--landing-foreground);
+}
+
+.landing-page .text-primary {
+    color: var(--landing-primary);
+}
+
+.landing-page .bg-primary {
+    background-color: var(--landing-primary);
+}
+
+.landing-page .text-muted-foreground {
+    color: var(--landing-muted-foreground);
+}
+
+.landing-page .bg-muted {
+    background-color: var(--landing-muted);
+}
+
+.landing-page .bg-card {
+    background-color: var(--landing-card);
+}
+
+.landing-page .text-card-foreground {
+    color: var(--landing-card-foreground);
+}
+
+.landing-page .border {
+    border-color: var(--landing-border);
+}
+
+/* Features Section - Black cards with white icons */
+.landing-page .bg-muted {
+    background-color: #0a0a0a !important;
+}
+
+.landing-page .text-primary {
+    color: #ffffff !important;
+}
+
+.landing-page .bg-background {
+    background-color: #0a0a0a !important;
+}

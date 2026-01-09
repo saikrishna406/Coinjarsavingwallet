@@ -11,7 +11,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Plus } from "lucide-react"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -35,8 +36,8 @@ export function CreateGoalDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Create Goal
+                <Button id="create-goal-trigger" className="bg-gray-900 text-white hover:bg-gray-800 border-0">
+                    <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" /> Create Goal
                 </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -66,7 +67,7 @@ export function CreateGoalDialog() {
                         <Input id="date" type="date" required />
                     </div>
                     <DialogFooter>
-                        <Button type="submit" disabled={isLoading}>{isLoading ? "Creating..." : "Create Goal"}</Button>
+                        <Button type="submit" disabled={isLoading} className="bg-gray-900 text-white hover:bg-gray-800 border-0">{isLoading ? "Creating..." : "Create Goal"}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

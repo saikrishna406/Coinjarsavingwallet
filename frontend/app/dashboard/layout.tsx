@@ -8,24 +8,23 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="flex min-h-screen flex-col lg:flex-row">
+        <div className="min-h-screen bg-white">
             {/* Mobile Header */}
-            <div className="lg:hidden flex items-center justify-between p-4 border-b">
+            <div className="lg:hidden flex items-center justify-between p-4 border-b bg-white">
                 <span className="font-bold text-primary">CoinJar</span>
                 <Button variant="ghost" size="icon">
                     <Menu className="h-6 w-6" />
                 </Button>
             </div>
 
-            {/* Desktop Sidebar */}
-            <div className="hidden lg:block w-64 shrink-0">
-                <Sidebar className="fixed w-64" />
+            {/* Desktop Sidebar - Fixed Position */}
+            <div className="hidden lg:block">
+                <Sidebar />
             </div>
 
-            {/* Content */}
-            <div className="flex-1 lg:pl-64">
-                {/* We add padding equal to sidebar width because sidebar is fixed */}
-                <div className="h-full px-4 py-6 lg:px-8">
+            {/* Content - With left margin for sidebar */}
+            <div className="lg:ml-[260px] bg-gray-50 min-h-screen">
+                <div className="px-8 py-6">
                     {children}
                 </div>
             </div>

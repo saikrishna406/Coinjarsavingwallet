@@ -27,11 +27,50 @@ export default function RegisterCardSection() {
     const [phone, setPhone] = useState(""); // Assuming phone is needed based on previous edits
     const router = useRouter();
 
-    const handleSignup = (e: React.FormEvent) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Add your signup logic here
-        console.log("Signing up with:", { name, email, password, phone });
-        router.push("/auth/verify"); // Example redirection
+        setIsLoading(true);
+        // Signup logic is now similar to login for Phone Auth (Send OTP)
+        // We might want to store the Name/Email to update the profile AFTER verification?
+        // For now, let's just trigger the OTP flow.
+        // Ideally, we'd send name/email to backend to "pre-register" or update later.
+
+        try {
+            const rawPhone = phone;
+            // Basic validation
+            if (!rawPhone || rawPhone.length < 10) {
+                alert("Please enter a valid phone number");
+                setIsLoading(false);
+                return;
+            }
+
+            // Store meta details to save after verification
+            localStorage.setItem("signup_name", name);
+            localStorage.setItem("signup_email", email);
+            localStorage.setItem("demo_phone", rawPhone); // For Verify Page
+
+            const fullPhone = "91" + rawPhone;
+
+            const res = await fetch('http://localhost:3002/api/auth/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: fullPhone })
+            });
+
+            if (res.ok) {
+                router.push("/auth/verify");
+            } else {
+                const data = await res.json();
+                alert("Error sending OTP: " + (data.message || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("Signup error", error);
+            alert("Failed to connect to server");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -257,8 +296,12 @@ export default function RegisterCardSection() {
                                 </Label>
                             </div>
 
-                            <Button className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors" type="submit">
-                                Sign Up
+                            <Button
+                                className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors"
+                                type="submit"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Sending OTP..." : "Sign Up"}
                             </Button>
                         </form>
 

@@ -33,11 +33,37 @@ export default function LoginCardSection() {
     const [password, setPassword] = useState("");
     const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Add your login logic here
-        console.log("Logging in with:", email, password);
-        router.push("/auth/verify"); // Example redirection
+        setIsLoading(true);
+        try {
+            // Using 'email' state variable which now holds phone number
+            const phone = "91" + email; // Prefix country code if needed, assuming user enters 10 digits
+
+            const res = await fetch('http://localhost:3002/api/auth/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone })
+            });
+
+            if (res.ok) {
+                // Store phone for verify page
+                localStorage.setItem("demo_phone", email); // Store without prefix for display, or with prefix for API?
+                // Let's store raw value for display, add prefix in verify step
+
+                router.push("/auth/verify");
+            } else {
+                const data = await res.json();
+                alert("Error sending OTP: " + (data.message || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("Login error", error);
+            alert("Failed to connect to server");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Canvas Logic for Particles
@@ -191,52 +217,27 @@ export default function LoginCardSection() {
                     <CardContent className="grid gap-5">
                         <form onSubmit={handleLogin} className="grid gap-5">
                             <div className="grid gap-2">
-                                <Label htmlFor="email" className="text-zinc-300">
-                                    Email
+                                <Label htmlFor="phone" className="text-zinc-300">
+                                    Phone Number
                                 </Label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                                    {/* Using Mail icon as placeholder or import Phone if exists */}
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 flex items-center justify-center font-bold text-xs" >+91</div>
                                     <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="you@example.com"
+                                        id="phone"
+                                        type="tel"
+                                        placeholder="9876543210"
                                         className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                        value={email}
+                                        value={email} // Using email state variable for phone to minimize changes, effectively 'phone'
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
+                                        maxLength={10}
+                                        pattern="[0-9]{10}"
                                     />
                                 </div>
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="password" className="text-zinc-300">
-                                    Password
-                                </Label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                                    <Input
-                                        id="password"
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="••••••••"
-                                        className="pl-10 pr-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 focus-visible:ring-zinc-700"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        aria-label={showPassword ? "Hide password" : "Show password"}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-zinc-400 hover:text-zinc-200"
-                                        onClick={() => setShowPassword((v) => !v)}
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff className="h-4 w-4" />
-                                        ) : (
-                                            <Eye className="h-4 w-4" />
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
+                            {/* Password section removed as we are doing OTP flow */}
 
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -248,13 +249,14 @@ export default function LoginCardSection() {
                                         Remember me
                                     </Label>
                                 </div>
-                                <Link href="#" className="text-sm text-zinc-300 hover:text-zinc-100">
-                                    Forgot password?
-                                </Link>
                             </div>
 
-                            <Button className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors" type="submit">
-                                Continue
+                            <Button
+                                className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200 transition-colors"
+                                type="submit"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? "Sending OTP..." : "Continue"}
                             </Button>
                         </form>
 

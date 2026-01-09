@@ -32,15 +32,40 @@ export default function VerifyCardSection() {
         }
     }, []);
 
-    const handleVerify = (e: React.FormEvent) => {
+    const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate verification
-        setTimeout(() => {
+
+        try {
+            const rawPhone = phone;
+            const fullPhone = "91" + rawPhone; // Ensure matching prefix
+
+            const res = await fetch('http://localhost:3002/api/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone: fullPhone,
+                    token: otp,
+                    type: 'phone'
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                // Store Auth Token
+                localStorage.setItem("auth_token", data.access_token);
+                // Redirect to dashboard
+                router.push("/dashboard");
+            } else {
+                const data = await res.json();
+                alert("Verification failed: " + (data.message || "Invalid OTP"));
+            }
+        } catch (error) {
+            console.error("Verify error", error);
+            alert("Verification failed: Network error");
+        } finally {
             setIsLoading(false);
-            console.log("Verifying OTP:", otp);
-            router.push("/dashboard");
-        }, 1500);
+        }
     };
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);

@@ -1,18 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-jakarta), var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
 :root {
-  --background: #f8fafc;
-  /* Slate 50 */
-  --foreground: #0f172a;
-  /* Slate 900 */
+  --background: #050505;
+  /* Black */
+  --foreground: #ffffff;
+  /* White */
 
-  --primary: #4f46e5;
-  /* Indigo 600 */
+  --primary: #5227ff;
   --primary-foreground: #ffffff;
 
   --secondary: #10b981;
@@ -24,26 +23,25 @@
   --muted-foreground: #64748b;
   /* Slate 500 */
 
-  --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card: #0a0a0a;
+  --card-foreground: #ffffff;
 
   --border: #e2e8f0;
   /* Slate 200 */
   --input: #e2e8f0;
-  --ring: #4f46e5;
+  --ring: #5227ff;
 
   --radius: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a;
-    /* Slate 900 */
-    --foreground: #f8fafc;
-    /* Slate 50 */
+    --background: #000000;
+    /* pure black */
+    --foreground: #ffffff;
+    /* white */
 
-    --primary: #6366f1;
-    /* Indigo 500 */
+    --primary: #5227ff;
     --primary-foreground: #ffffff;
 
     --secondary: #34d399;
@@ -55,14 +53,14 @@
     --muted-foreground: #94a3b8;
     /* Slate 400 */
 
-    --card: #1e293b;
-    /* Slate 800 */
-    --card-foreground: #f8fafc;
+    --card: #0a0a0a;
+    /* Slate 950 */
+    --card-foreground: #ffffff;
 
     --border: #334155;
     /* Slate 700 */
     --input: #334155;
-    --ring: #6366f1;
+    --ring: #5227ff;
   }
 }
 
@@ -77,5 +75,36 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@theme {
+  --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+  --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+
+  @keyframes spin-around {
+    0% {
+      transform: translateZ(0) rotate(0);
+    }
+
+    15%,
+    35% {
+      transform: translateZ(0) rotate(90deg);
+    }
+
+    65%,
+    85% {
+      transform: translateZ(0) rotate(270deg);
+    }
+
+    100% {
+      transform: translateZ(0) rotate(360deg);
+    }
+  }
+
+  @keyframes shimmer-slide {
+    to {
+      transform: translate(calc(100cqw - 100%), 0);
+    }
   }
 }

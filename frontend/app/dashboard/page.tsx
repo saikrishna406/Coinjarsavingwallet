@@ -55,6 +55,18 @@ export default function DashboardPage() {
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
+        // Handle Google OAuth Redirect
+        const hash = window.location.hash
+        if (hash && hash.includes('access_token')) {
+            const params = new URLSearchParams(hash.replace('#', '?')) // handle hash as query params
+            const accessToken = params.get('access_token')
+            if (accessToken) {
+                localStorage.setItem('auth_token', accessToken)
+                // Optional: Clear hash to clean up URL
+                window.history.replaceState(null, '', window.location.pathname)
+            }
+        }
+
         fetchDashboardData()
     }, [])
 

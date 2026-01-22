@@ -61,6 +61,33 @@ const Menu = ({ children, items }: { children: React.ReactNode; items: MenuItem[
 
 export function Sidebar({ className }: { className?: string }) {
     const pathname = usePathname();
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                try {
+                    // Start by checking if we have stored basic details from signup
+                    const localName = localStorage.getItem('signup_name');
+                    const localEmail = localStorage.getItem('signup_email');
+
+                    // Then try to fetch full profile
+                    const { UpiService } = await import('@/services/upi.service');
+                    const profile = await UpiService.getProfile(token);
+
+                    setUser({
+                        name: profile.name || localName || 'User',
+                        email: profile.email || localEmail || 'user@example.com',
+                        ...profile
+                    });
+                } catch (error) {
+                    console.error("Failed to fetch sidebar profile", error);
+                }
+            }
+        };
+        fetchProfile();
+    }, []);
 
     const navigation: MenuItem[] = [
         {
@@ -119,12 +146,13 @@ export function Sidebar({ className }: { className?: string }) {
                 <div className="h-20 flex items-center pl-2">
                     <div className="w-full flex items-center gap-x-4">
                         <Avatar className="w-10 h-10">
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>SK</AvatarFallback>
+                            {/* Use avatar_url if available, or generate a fallback based on name */}
+                            <AvatarImage src={`https://api.dicebear.com/7.x/initials/svg?seed=${user?.name || 'User'}`} />
+                            <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
                         </Avatar>
                         <div>
-                            <span className="block text-gray-700 text-sm font-semibold">Saikrishna</span>
-                            <span className="block mt-px text-gray-600 text-xs">Pro Plan</span>
+                            <span className="block text-gray-700 text-sm font-semibold">{user?.name || 'User'}</span>
+                            <span className="block mt-px text-gray-600 text-xs">{user?.email || 'user@example.com'}</span>
                         </div>
 
                         <div className="relative flex-1 text-right">
@@ -158,7 +186,7 @@ export function Sidebar({ className }: { className?: string }) {
                                     className="absolute z-10 top-12 right-0 w-64 rounded-lg bg-white shadow-md border text-sm text-gray-600"
                                 >
                                     <div className="p-2 text-left">
-                                        <span className="block text-gray-500/80 p-2">saikrishna@example.com</span>
+                                        <span className="block text-gray-500/80 p-2">{user?.email || 'user@example.com'}</span>
                                         <Link
                                             href="/dashboard/account"
                                             className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"

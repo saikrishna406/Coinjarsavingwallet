@@ -86,8 +86,10 @@ const BlurText = ({
     const totalDuration = stepDuration * (stepCount - 1);
     const times = Array.from({ length: stepCount }, (_, i) => (stepCount === 1 ? 0 : i / (stepCount - 1)));
 
+    const DynamicComponent = Component as any;
+
     return (
-        <Component ref={ref} className={className} style={{ display: 'flex', flexWrap: 'wrap' }}>
+        <DynamicComponent ref={ref} className={className} style={{ display: 'flex', flexWrap: 'wrap' }}>
             {elements.map((segment, index) => {
                 const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
 
@@ -112,7 +114,7 @@ const BlurText = ({
                     </motion.span>
                 );
             })}
-        </Component>
+        </DynamicComponent>
     );
 };
 

@@ -53,7 +53,9 @@ export default function RegisterCardSection() {
 
             const fullPhone = "91" + rawPhone;
 
-            const res = await fetch('http://localhost:3002/api/auth/send-otp', {
+            const isProduction = process.env.NODE_ENV === 'production';
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || (isProduction ? '/api' : 'http://localhost:3002/api');
+            const res = await fetch(`${API_URL}/auth/send-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone: fullPhone })
@@ -67,7 +69,9 @@ export default function RegisterCardSection() {
             }
         } catch (error) {
             console.error("Signup error", error);
-            alert("Failed to connect to server");
+            const isProduction = process.env.NODE_ENV === 'production';
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || (isProduction ? '/api' : 'http://localhost:3002/api');
+            alert(`Failed to connect to server at ${API_URL}. Error: ${error}`);
         } finally {
             setIsLoading(false);
         }

@@ -146,7 +146,7 @@ export function Sidebar({ className }: { className?: string }) {
                 <div className="h-20 flex items-center pl-2">
                     <div
                         ref={profileRef as any}
-                        className="w-full flex items-center gap-x-4 cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="w-full flex items-center gap-x-4 cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors relative"
                         onClick={() => setIsProfileActive(!isProfileActive)}
                     >
                         <Avatar className="w-10 h-10">
@@ -159,58 +159,57 @@ export function Sidebar({ className }: { className?: string }) {
                             <span className="block mt-px text-gray-600 text-xs">{user?.email || 'user@example.com'}</span>
                         </div>
 
-                        <div className="relative flex-1 text-right">
-                            {isProfileActive && (
-                                <div
-                                    id="profile-menu"
-                                    role="menu"
-                                    className="absolute z-10 top-12 right-0 w-64 rounded-lg bg-white shadow-md border text-sm text-gray-600 mb-2"
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    <div className="p-2 text-left">
-                                        <span className="block text-gray-500/80 p-2">{user?.email || 'user@example.com'}</span>
-                                        <Link
-                                            href="/dashboard/account"
-                                            className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"
-                                            role="menuitem"
-                                            onClick={() => setIsProfileActive(false)}
-                                        >
-                                            Add another account
-                                        </Link>
+                        {/* Dropdown Menu */}
+                        {isProfileActive && (
+                            <div
+                                id="profile-menu"
+                                role="menu"
+                                className="absolute z-50 left-0 top-full mt-1 w-full rounded-lg bg-white shadow-lg border text-sm text-gray-600"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="p-2 text-left">
+                                    <span className="block text-gray-500/80 p-2">{user?.email || 'user@example.com'}</span>
+                                    <Link
+                                        href="/dashboard/account"
+                                        className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"
+                                        role="menuitem"
+                                        onClick={() => setIsProfileActive(false)}
+                                    >
+                                        Add another account
+                                    </Link>
 
-                                        <div className="relative rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                                className="w-4 h-4 absolute right-1 inset-y-0 my-auto pointer-events-none"
-                                                aria-hidden="true"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                            <select className="w-full cursor-pointer appearance-none bg-transparent p-2 outline-none" defaultValue="">
-                                                <option value="" disabled hidden>
-                                                    Theme
-                                                </option>
-                                                <option>Dark</option>
-                                                <option>Light</option>
-                                            </select>
-                                        </div>
-
-                                        <button
-                                            className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"
-                                            onClick={() => window.location.href = '/auth/login'}
+                                    <div className="relative rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                            className="w-4 h-4 absolute right-1 inset-y-0 my-auto pointer-events-none"
+                                            aria-hidden="true"
                                         >
-                                            Logout
-                                        </button>
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                        <select className="w-full cursor-pointer appearance-none bg-transparent p-2 outline-none" defaultValue="">
+                                            <option value="" disabled hidden>
+                                                Theme
+                                            </option>
+                                            <option>Dark</option>
+                                            <option>Light</option>
+                                        </select>
                                     </div>
+
+                                    <button
+                                        className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"
+                                        onClick={() => window.location.href = '/auth/login'}
+                                    >
+                                        Logout
+                                    </button>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

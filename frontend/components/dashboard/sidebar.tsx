@@ -144,7 +144,11 @@ export function Sidebar({ className }: { className?: string }) {
         <nav className={`fixed top-0 left-0 w-[260px] h-full border-r border-gray-200 bg-white ${className || ''}`}>
             <div className="flex flex-col h-full px-3">
                 <div className="h-20 flex items-center pl-2">
-                    <div className="w-full flex items-center gap-x-4">
+                    <div
+                        ref={profileRef as any}
+                        className="w-full flex items-center gap-x-4 cursor-pointer p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                        onClick={() => setIsProfileActive(!isProfileActive)}
+                    >
                         <Avatar className="w-10 h-10">
                             {/* Use avatar_url if available, or generate a fallback based on name */}
                             <AvatarImage src={user?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.name || 'User'}`} />
@@ -156,38 +160,23 @@ export function Sidebar({ className }: { className?: string }) {
                         </div>
 
                         <div className="relative flex-1 text-right">
-                            <button
-                                ref={profileRef}
-                                className="p-1.5 rounded-md text-gray-500 hover:bg-gray-50 active:bg-gray-100"
-                                onClick={() => setIsProfileActive((v) => !v)}
-                                aria-haspopup="menu"
-                                aria-expanded={isProfileActive}
-                                aria-controls="profile-menu"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                    className="w-5 h-5"
-                                    aria-hidden="true"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.2a.75.75 0 011.06.04l2.7 2.908 2.7-2.908a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </button>
-
                             {isProfileActive && (
                                 <div
                                     id="profile-menu"
                                     role="menu"
-                                    className="absolute z-10 top-12 right-0 w-64 rounded-lg bg-white shadow-md border text-sm text-gray-600"
+                                    className="absolute z-10 bottom-12 right-0 w-64 rounded-lg bg-white shadow-md border text-sm text-gray-600 mb-2"
+                                    onClick={(e) => e.stopPropagation()}
                                 >
                                     <div className="p-2 text-left">
                                         <span className="block text-gray-500/80 p-2">{user?.email || 'user@example.com'}</span>
-
+                                        <Link
+                                            href="/dashboard/account"
+                                            className="block w-full p-2 text-left rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150"
+                                            role="menuitem"
+                                            onClick={() => setIsProfileActive(false)}
+                                        >
+                                            Add another account
+                                        </Link>
 
                                         <div className="relative rounded-md hover:bg-gray-50 active:bg-gray-100 duration-150">
                                             <svg

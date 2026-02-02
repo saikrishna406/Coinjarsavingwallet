@@ -96,6 +96,35 @@ export function PaymentModal({ goalId, onSuccess }: PaymentModalProps) {
         }
     }
 
+    const handleDemoPay = async () => {
+        if (!amount || parseFloat(amount) <= 0) {
+            setError("Please enter a valid amount")
+            return
+        }
+
+        setStep("processing")
+        setError("")
+
+        try {
+            const token = localStorage.getItem('auth_token')
+            if (!token) throw new Error("Not authenticated")
+
+            // Direct call to add savings without payment gateway
+            if (goalId) {
+                await GoalsService.addSavings(token, goalId, parseFloat(amount))
+            } else {
+                throw new Error("Goal ID is missing")
+            }
+
+            setStep("success")
+            if (onSuccess) onSuccess()
+        } catch (err: any) {
+            console.error(err)
+            setError(err.message || "Demo payment failed")
+            setStep("input")
+        }
+    }
+
     return (
         <Dialog open={open} onOpenChange={(val) => {
             setOpen(val)
@@ -142,7 +171,19 @@ export function PaymentModal({ goalId, onSuccess }: PaymentModalProps) {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button type="submit" className="w-full bg-gray-900 text-white hover:bg-gray-800 border-0">Pay ₹{amount || '0'}</Button>
+                            <div className="flex gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="flex-1 border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-white"
+                                    onClick={handleDemoPay}
+                                >
+                                    Demo Pay
+                                </Button>
+                                <Button type="submit" className="flex-1 bg-gray-900 text-white hover:bg-gray-800 border-0">
+                                    Pay ₹{amount || '0'}
+                                </Button>
+                            </div>
                         </DialogFooter>
                     </form>
                 )}

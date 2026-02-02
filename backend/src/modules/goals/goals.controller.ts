@@ -26,4 +26,13 @@ export class GoalsController {
     ) {
         return this.goalsService.addSavings(user.id, id, amount);
     }
+
+    @Post(':id/withdraw')
+    async withdraw(
+        @CurrentUser() user: any,
+        @Param('id') id: string,
+        @Body('amount') amount: number
+    ) {
+        return this.goalsService.withdrawFunds(user.id, id, amount);
+    }
 }

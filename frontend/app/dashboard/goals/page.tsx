@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { CreateGoalDialog } from "@/components/dashboard/create-goal-dialog"
 import { PaymentModal } from "@/components/dashboard/payment-modal"
+import { WithdrawModal } from "@/components/dashboard/withdraw-modal"
 import { Progress } from "@/components/ui/progress"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from "framer-motion"
@@ -166,7 +167,16 @@ export default function GoalsPage() {
                                 {/* Footer Actions */}
                                 <div className="pt-4 border-t border-gray-50 flex gap-3">
                                     <div className="flex-1">
-                                        <PaymentModal goalId={goal.id} onSuccess={fetchGoals} />
+                                        {goal.status === 'completed' ? (
+                                            <WithdrawModal
+                                                goalId={goal.id}
+                                                goalTitle={goal.title}
+                                                currentAmount={goal.current}
+                                                onSuccess={fetchGoals}
+                                            />
+                                        ) : (
+                                            <PaymentModal goalId={goal.id} onSuccess={fetchGoals} />
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>

@@ -53,5 +53,23 @@ export const GoalsService = {
         }
 
         return await res.json();
+    },
+
+    withdrawFunds: async (token: string, goalId: string, amount: number) => {
+        const res = await fetch(`${API_URL}/${goalId}/withdraw`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ amount })
+        });
+
+        if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.message || 'Failed to withdraw funds');
+        }
+
+        return await res.json();
     }
 };

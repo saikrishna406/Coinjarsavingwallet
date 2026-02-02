@@ -117,8 +117,8 @@ export function WithdrawModal({ goalId, goalTitle, currentAmount, onSuccess }: W
                                     <Button
                                         type="button"
                                         variant="ghost"
-                                        size="xs"
-                                        className="text-xs text-blue-600 h-6"
+                                        size="sm"
+                                        className="text-xs text-blue-600 h-6 px-2"
                                         onClick={() => setAmount(currentAmount.toString())}
                                     >
                                         Withdraw Full Amount

@@ -111,56 +111,88 @@ export class GoalsService {
 
     async withdrawFunds(userId: string, goalId: string, amount: number) {
         const supabase = this.supabaseService.getClient();
+        let walletTransactionId: string | null = null;
+        let goalUpdateSuccess = false;
 
-        // 1. Fetch Goal & Validate
-        const { data: goal, error: fetchError } = await supabase
-            .from('goals')
-            .select('*')
-            .eq('id', goalId)
-            .eq('user_id', userId)
-            .single();
+        try {
+            // 1. Fetch Goal & Validate
+            const { data: goal, error: fetchError } = await supabase
+                .from('goals')
+                .select('*')
+                .eq('id', goalId)
+                .eq('user_id', userId)
+                .single();
 
-        if (fetchError || !goal) {
-            throw new InternalServerErrorException('Goal not found');
+            if (fetchError || !goal) {
+                throw new InternalServerErrorException('Goal not found');
+            }
+
+            // Validation Checks
+            if (goal.status !== 'completed') {
+                throw new InternalServerErrorException('Goal is not completed yet so you cannot withdraw');
+            }
+
+            if (amount > goal.current_amount) {
+                throw new InternalServerErrorException('Withdrawal amount exceeds goal balance');
+            }
+
+            // 2. Withdraw from Wallet (This creates a transaction record)
+            // If this fails, nothing else happens - safe to fail here
+            const walletResult = await this.walletService.withdrawFunds(userId, amount, 'WITHDRAW', goalId);
+            walletTransactionId = walletResult.transactionId;
+
+            // 3. Update Goal Balance & Status (CRITICAL STEP)
+            const newGoalAmount = goal.current_amount - amount;
+            let newStatus = 'completed'; // Keep as completed even if balance is 0
+
+            const { data: updatedGoal, error: updateError } = await supabase
+                .from('goals')
+                .update({
+                    current_amount: newGoalAmount,
+                    status: newStatus
+                })
+                .eq('id', goalId)
+                .select()
+                .single();
+
+            if (updateError) {
+                // CRITICAL: Wallet was debited but goal update failed
+                // We MUST rollback the wallet transaction
+                throw new InternalServerErrorException(`Failed to update goal: ${updateError.message}`);
+            }
+
+            goalUpdateSuccess = true;
+            return updatedGoal;
+
+        } catch (error) {
+            // ROLLBACK LOGIC
+            console.error('GOAL WITHDRAWAL FAILED - Initiating Rollback:', error);
+
+            // If wallet was debited but goal update failed, refund the wallet
+            if (walletTransactionId && !goalUpdateSuccess) {
+                console.error('CRITICAL: Wallet debited but goal update failed. Refunding wallet...');
+                try {
+                    // Refund by adding the amount back to wallet
+                    await this.walletService.addFunds(userId, amount, 'UPI', `REFUND_${walletTransactionId}`);
+                    console.log(`Rollback successful: Refunded ${amount} to wallet for user ${userId}`);
+                } catch (rollbackError) {
+                    // CRITICAL FAILURE: Money is lost in the system
+                    console.error('CRITICAL FAILURE: Could not refund wallet after goal update failure!', {
+                        userId,
+                        goalId,
+                        amount,
+                        walletTransactionId,
+                        error: rollbackError
+                    });
+                    // In production:
+                    // 1. Send immediate alert to ops team
+                    // 2. Log to error monitoring (Sentry/DataDog)
+                    // 3. Create manual reconciliation ticket
+                    // 4. Freeze user account until resolved
+                }
+            }
+
+            throw error;
         }
-
-        // Validation Checks
-        if (goal.status !== 'completed') {
-            throw new InternalServerErrorException('Goal is not completed yet so you cannot withdraw');
-        }
-
-        if (amount > goal.current_amount) {
-            throw new InternalServerErrorException('Withdrawal amount exceeds goal balance');
-        }
-
-        // Source is 'WITHDRAW'
-        await this.walletService.withdrawFunds(userId, amount, 'WITHDRAW', goalId);
-
-        // 3. Update Goal Balance & Status
-        const newGoalAmount = goal.current_amount - amount;
-        let newStatus = 'completed'; // Keep as completed even if balance is 0, since 'withdrawn' is not in DB enum
-
-        // Note: Ideally we would set status to 'withdrawn', but the DB constraint limits to 'active', 'completed', 'cancelled'.
-        // So we interpret (completed + 0 balance) as withdrawn in the UI.
-
-        const { data: updatedGoal, error: updateError } = await supabase
-            .from('goals')
-            .update({
-                current_amount: newGoalAmount,
-                status: newStatus
-            })
-            .eq('id', goalId)
-            .select()
-            .single();
-
-        if (updateError) {
-            // CRITICAL: We deducted money but failed to update goal. 
-            // Ideally we should rollback wallet transaction here.
-            console.error('CRITICAL: Money deducted but goal update failed!', updateError);
-            console.error('Attempted update:', { goalId, newGoalAmount, newStatus });
-            throw new InternalServerErrorException(`Failed to update goal after withdrawal: ${updateError.message}`);
-        }
-
-        return updatedGoal;
     }
 }

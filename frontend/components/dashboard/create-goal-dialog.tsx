@@ -84,6 +84,34 @@ export function CreateGoalDialog({ onGoalCreated }: CreateGoalDialogProps) {
         }
     }
 
+    // Calculate daily savings
+    const calculateDailySavings = () => {
+        if (!formData.target_amount || !formData.target_date) return null;
+
+        const target = parseFloat(formData.target_amount);
+        const current = parseFloat(formData.current_amount || '0');
+        const remaining = Math.max(0, target - current);
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const targetDate = new Date(formData.target_date);
+        targetDate.setHours(0, 0, 0, 0);
+
+        const diffTime = targetDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Days remaining
+
+        if (diffDays <= 0) return null;
+
+        const daily = remaining / diffDays;
+
+        return {
+            days: diffDays,
+            daily: Math.ceil(daily)
+        };
+    }
+
+    const savingsPlan = calculateDailySavings();
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -123,6 +151,18 @@ export function CreateGoalDialog({ onGoalCreated }: CreateGoalDialogProps) {
                         </Label>
                         <Input id="target_date" type="date" required value={formData.target_date} onChange={handleChange} />
                     </div>
+
+                    {/* Daily Savings Calculator Insight */}
+                    {savingsPlan && (
+                        <div className="rounded-lg bg-blue-50 p-3 border border-blue-100 text-sm text-blue-800 flex flex-col gap-1">
+                            <span className="font-semibold">💡 Savings Plan:</span>
+                            <span>
+                                To reach your goal in <strong>{savingsPlan.days} days</strong>, you need to save approximately
+                                <span className="font-bold text-blue-600 bg-blue-100 px-1 rounded ml-1">₹{savingsPlan.daily}/day</span>.
+                            </span>
+                        </div>
+                    )}
+
                     <div className="grid gap-2">
                         <Label htmlFor="category" className="text-sm font-medium">
                             Category

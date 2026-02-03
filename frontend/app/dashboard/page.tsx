@@ -29,6 +29,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { CreateGoalDialog } from "@/components/dashboard/create-goal-dialog"
 import { PaymentModal } from "@/components/dashboard/payment-modal"
+import { WithdrawModal } from "@/components/dashboard/withdraw-modal"
 import { NotificationBell } from "@/components/dashboard/notification-bell"
 import { DashboardService } from "@/services/dashboard.service"
 
@@ -323,8 +324,10 @@ export default function DashboardPage() {
                                         {/* Details */}
                                         <div className="space-y-2 mb-4">
                                             <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                <FontAwesomeIcon icon={faClock} className="text-gray-400 text-xs" />
-                                                <span>{daysLeft > 0 ? `${daysLeft} days left` : 'Due today'}</span>
+                                                <FontAwesomeIcon icon={faClock} className={daysLeft < 0 ? "text-red-400 text-xs" : "text-gray-400 text-xs"} />
+                                                <span className={daysLeft < 0 ? "text-red-500 font-medium" : ""}>
+                                                    {daysLeft > 0 ? `${daysLeft} days left` : daysLeft === 0 ? 'Due today' : `Overdue by ${Math.abs(daysLeft)} days`}
+                                                </span>
                                             </div>
 
                                             {/* Daily Savings Insight */}
@@ -343,7 +346,7 @@ export default function DashboardPage() {
 
                                         {/* Progress Bar */}
                                         <div className="mb-4">
-                                            <Progress value={percent} className="h-1" />
+                                            <Progress value={percent} className={`h-1 ${daysLeft < 0 && percent < 100 ? 'bg-red-100' : ''}`} />
                                         </div>
 
                                         {/* Footer */}
@@ -351,8 +354,17 @@ export default function DashboardPage() {
                                             <span className="text-xs text-gray-500">
                                                 Created {new Date(goal.created_at).toLocaleDateString()}
                                             </span>
-                                            {/* Pass goal ID to payment modal if needed, currently generic */}
-                                            <PaymentModal />
+
+                                            {percent >= 100 ? (
+                                                <WithdrawModal
+                                                    goalId={goal.id}
+                                                    goalTitle={goal.name}
+                                                    currentAmount={goal.current_amount}
+                                                    onSuccess={fetchDashboardData}
+                                                />
+                                            ) : (
+                                                <PaymentModal goalId={goal.id} onSuccess={fetchDashboardData} />
+                                            )}
                                         </div>
                                     </CardContent>
                                 </Card>

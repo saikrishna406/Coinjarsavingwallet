@@ -326,6 +326,15 @@ export default function DashboardPage() {
                                                 <FontAwesomeIcon icon={faClock} className="text-gray-400 text-xs" />
                                                 <span>{daysLeft > 0 ? `${daysLeft} days left` : 'Due today'}</span>
                                             </div>
+
+                                            {/* Daily Savings Insight */}
+                                            {daysLeft > 0 && goal.target_amount > goal.current_amount && (
+                                                <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded w-fit">
+                                                    <FontAwesomeIcon icon={faCalendar} className="text-xs" />
+                                                    <span>Save ₹{Math.ceil((goal.target_amount - goal.current_amount) / daysLeft)}/day</span>
+                                                </div>
+                                            )}
+
                                             <div className="flex items-center gap-2 text-sm text-gray-600">
                                                 <FontAwesomeIcon icon={faChartLine} className="text-gray-400 text-xs" />
                                                 <span>{percent}% complete</span>

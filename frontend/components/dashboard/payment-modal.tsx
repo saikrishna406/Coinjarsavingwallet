@@ -203,7 +203,7 @@ export function PaymentModal({ goalId, onSuccess }: PaymentModalProps) {
                                             const val = e.target.value;
                                             if (val.length < 8) setAmount(val);
                                         }}
-                                        className="h-10 border-0 bg-transparent text-3xl font-bold text-white placeholder:text-white/20 p-0 focus-visible:ring-0 w-full"
+                                        className="h-10 border-0 bg-transparent text-3xl font-bold text-white placeholder:text-white/20 p-0 focus-visible:ring-0 w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                     />
                                 </div>
                             </motion.div>
@@ -242,6 +242,7 @@ export function PaymentModal({ goalId, onSuccess }: PaymentModalProps) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
+                                className="space-y-3"
                             >
                                 <Button
                                     type="submit"
@@ -250,6 +251,14 @@ export function PaymentModal({ goalId, onSuccess }: PaymentModalProps) {
                                 >
                                     Pay ₹{amount || '0'}
                                 </Button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleDemoPay}
+                                    className="w-full text-xs text-white/30 hover:text-white/60 transition-colors"
+                                >
+                                    Test Mode: Demo Pay
+                                </button>
                             </motion.div>
 
                             {/* Footer */}
@@ -257,7 +266,7 @@ export function PaymentModal({ goalId, onSuccess }: PaymentModalProps) {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.5 }}
-                                className="mt-6 flex items-center justify-center gap-1.5 opacity-50"
+                                className="mt-4 flex items-center justify-center gap-1.5 opacity-50"
                             >
                                 <FontAwesomeIcon icon={faQrcode} className="text-[10px] text-white" />
                                 <span className="text-[10px] uppercase tracking-widest text-white font-medium">Secured by Razorpay</span>

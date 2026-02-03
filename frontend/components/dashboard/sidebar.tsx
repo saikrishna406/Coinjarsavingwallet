@@ -65,7 +65,19 @@ export function Sidebar({ className }: { className?: string }) {
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const token = localStorage.getItem('auth_token');
+            let token = localStorage.getItem('auth_token');
+
+            // Handle Google OAuth Redirect token (Prioritize fresh token from URL)
+            const hash = window.location.hash;
+            if (hash && hash.includes('access_token')) {
+                const params = new URLSearchParams(hash.replace('#', '?'));
+                const accessToken = params.get('access_token');
+                if (accessToken) {
+                    token = accessToken;
+                    localStorage.setItem('auth_token', accessToken);
+                }
+            }
+
             if (token) {
                 try {
                     // Start by checking if we have stored basic details from signup

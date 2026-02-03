@@ -60,14 +60,15 @@ export default function GoalsPage() {
                 const diffTime = targetDate.getTime() - today.getTime()
                 const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-                let status = g.status || 'active';
-                // Interpret 'completed' with 0 balance as 'Withdrawn' for UI
-                if (status === 'completed' && current <= 0) {
-                    status = 'Withdrawn';
-                } else if (status === 'completed') {
-                    status = 'Completed'; // Capitalize for consistency
-                } else if (status === 'active') {
-                    status = 'In Progress';
+                let displayStatus = 'In Progress';
+                if (percent >= 100) {
+                    // If funded fully, it is completed or withdrawn
+                    if (current <= 0 && status === 'completed') displayStatus = 'Withdrawn';
+                    else displayStatus = 'Completed';
+                } else {
+                    // Not funded fully
+                    if (daysLeft < 0) displayStatus = 'Overdue';
+                    else displayStatus = 'In Progress';
                 }
 
                 return {
@@ -77,7 +78,7 @@ export default function GoalsPage() {
                     current: current,
                     percent: percent,
                     icon: getIconForCategory(g.category),
-                    status: status,
+                    status: displayStatus,
                     daysLeft: daysLeft,
                     category: g.category || 'General'
                 }
@@ -141,8 +142,6 @@ export default function GoalsPage() {
                                     <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
                                         <FontAwesomeIcon icon={faEllipsisH} />
                                     </Button>
-                                    {/* Debug Info */}
-                                    {/* <span className="text-xs text-red-500">{goal.id}</span> */}
                                 </div>
 
                                 {/* Progress Section */}
@@ -153,9 +152,10 @@ export default function GoalsPage() {
                                             <p className="text-xs text-gray-500 mt-1">of ₹{goal.target.toLocaleString()} target</p>
                                         </div>
                                         <div className="text-right">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${goal.status === 'Completed' || goal.status === 'Withdrawn'
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-blue-50 text-blue-700'
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${goal.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                                                    goal.status === 'Overdue' ? 'bg-red-100 text-red-700' :
+                                                        goal.status === 'Withdrawn' ? 'bg-gray-100 text-gray-500' :
+                                                            'bg-blue-50 text-blue-700'
                                                 }`}>
                                                 {goal.status}
                                             </span>
@@ -163,12 +163,12 @@ export default function GoalsPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Progress value={goal.percent} className="h-2" />
+                                        <Progress value={goal.percent} className={`h-2 ${goal.status === 'Overdue' ? 'bg-red-100' : ''}`} indicatorClassName={goal.status === 'Overdue' ? 'bg-red-500' : ''} />
                                         <div className="flex justify-between text-xs text-gray-500">
                                             <span>{goal.percent}% completed</span>
-                                            <span className="flex items-center gap-1">
-                                                <FontAwesomeIcon icon={faClock} className="text-gray-400" />
-                                                {goal.daysLeft} days left
+                                            <span className={`flex items-center gap-1 ${goal.daysLeft < 0 ? 'text-red-500 font-medium' : ''}`}>
+                                                <FontAwesomeIcon icon={faClock} className={goal.daysLeft < 0 ? 'text-red-400' : 'text-gray-400'} />
+                                                {goal.daysLeft > 0 ? `${goal.daysLeft} days left` : goal.daysLeft === 0 ? 'Due today' : `Overdue by ${Math.abs(goal.daysLeft)} days`}
                                             </span>
                                         </div>
                                     </div>
@@ -189,6 +189,7 @@ export default function GoalsPage() {
                                                 Fully Withdrawn
                                             </Button>
                                         ) : (
+                                            /* Show PaymentModal for In Progress OR Overdue */
                                             <PaymentModal goalId={goal.id} onSuccess={fetchGoals} />
                                         )}
                                     </div>

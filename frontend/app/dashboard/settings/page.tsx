@@ -262,12 +262,11 @@ export default function SettingsPage() {
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Button variant="outline" className="w-full sm:w-auto border-gray-200 text-black hover:bg-gray-50">Change Password</Button>
-                        <Button variant="outline" className="w-full sm:w-auto border-gray-200 ml-0 sm:ml-4 mt-2 sm:mt-0 text-black hover:bg-gray-50">Enable 2FA</Button>
+                    <CardContent className="flex flex-col sm:flex-row gap-4">
+                        <Button variant="outline" className="border-gray-200 text-black hover:bg-gray-50">Change Password</Button>
+                        <Button variant="outline" className="border-gray-200 text-black hover:bg-gray-50">Enable 2FA</Button>
                         <Button
-                            variant="destructive"
-                            className="w-full sm:w-auto ml-0 sm:ml-4 mt-2 sm:mt-0"
+                            className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500"
                             onClick={() => {
                                 localStorage.removeItem('auth_token')
                                 window.location.href = '/auth/login'

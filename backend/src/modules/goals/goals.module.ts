@@ -9,5 +9,6 @@ import { GamificationModule } from '../gamification/gamification.module';
     imports: [SupabaseModule, WalletModule, GamificationModule],
     controllers: [GoalsController],
     providers: [GoalsService],
+    exports: [GoalsService]
 })
 export class GoalsModule { }

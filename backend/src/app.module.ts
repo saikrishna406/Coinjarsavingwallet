@@ -9,6 +9,7 @@ import { TransactionsModule } from './modules/transactions/transactions.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { NudgesModule } from './modules/nudges/nudges.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
     imports: [
@@ -25,6 +26,7 @@ import { GamificationModule } from './modules/gamification/gamification.module';
         PaymentsModule,
         NudgesModule,
         GamificationModule,
+        DashboardModule,
     ],
 })
 export class AppModule { }

@@ -30,10 +30,7 @@ import {
 import { CreateGoalDialog } from "@/components/dashboard/create-goal-dialog"
 import { PaymentModal } from "@/components/dashboard/payment-modal"
 import { NotificationBell } from "@/components/dashboard/notification-bell"
-import { GoalsService } from "@/services/goals.service"
-import { WalletService } from "@/services/wallet.service"
-import { UpiService } from "@/services/upi.service"
-import { GamificationService } from "@/services/gamification.service"
+import { DashboardService } from "@/services/dashboard.service"
 
 const container = {
     hidden: { opacity: 0 },
@@ -85,12 +82,13 @@ export default function DashboardPage() {
             }
 
             // Fetch goals, wallet, user profile, and gamification data in parallel
-            const [goalsData, walletData, profileData, gameData] = await Promise.all([
-                GoalsService.getGoals(token),
-                WalletService.getWallet(token),
-                UpiService.getProfile(token),
-                GamificationService.getStatus(token)
-            ])
+            // Fetch aggregated dashboard data from backend (Optimized for performance)
+            const data = await DashboardService.getSummary(token)
+
+            const goalsData = data.goals
+            const walletData = data.wallet
+            const profileData = data.profile
+            const gameData = data.gamification
 
             setGoals(goalsData)
             setWallet(walletData)
